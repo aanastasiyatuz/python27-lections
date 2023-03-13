@@ -50,3 +50,5 @@ print(A.var1) # 'переменная класса'
 print(obj.var1) # 'переменная класса'
 print(obj.var2) # 'переменная обьекта'
 
+
+from inheritance import A

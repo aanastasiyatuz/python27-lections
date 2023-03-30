@@ -172,8 +172,69 @@ CREATE TABLE post (
 );
 ```
 
+## реализация one2one в postgres
+```sql
+CREATE TABLE author (
+    id serial PRIMARY KEY,
+    name varchar(50),
+    last_name varchar(70)
+);
+
+CREATE TABLE autobiography (
+    id serial PRIMARY KEY,
+    published date,
+    body text,
+    author_id int UNIQUE, -- чтобы создать one - one, добавляем unique
+
+    CONSTRAINT fk_author_bio
+    FOREIGN KEY (author_id) REFERENCES author (id)
+);
+```
+
+## реализация many2many в postgres
+```sql
+CREATE TABLE developer (
+    id serial PRIMARY KEY,
+    name varchar(50),
+    age int,
+    experience int
+);
+
+CREATE TABLE project (
+    id serial PRIMARY KEY,
+    title varchar(100),
+    tz text,
+    deadline date
+);
+
+CREATE TABLE dev_proj (
+    dev_id int,
+    proj_id int,
+
+    CONSTRAINT fk_dev_m2m
+    FOREIGN KEY (dev_id) REFERENCES developer (id),
+
+    CONSTRAINT fk_proj_m2m
+    FOREIGN KEY (proj_id) REFERENCES project (id)
+);
+```
+
+
 # JOINS
 > **JOIN** - инструкция, которая позволяет одним SELECT, брать данные из двух таблиц (у которых есть связанные поля)
 
 > **INNER JOIN (JOIN)** - достаются только те записи у которых есть данные в обоих таблицах
 > **FULL JOIN** - достаются все записи и с первой таблицы и со второй
+
+```sql
+-- one2one / one2many
+SELECT * FROM blogger 
+JOIN post ON blogger.id = post.blogger_id;
+```
+
+```sql
+-- many2many
+SELECT * FROM developer
+JOIN dev_proj ON developer.id = dev_proj.dev_id
+JOIN project ON project.id = dev_proj.proj_id;
+```

@@ -238,3 +238,93 @@ SELECT * FROM developer
 JOIN dev_proj ON developer.id = dev_proj.dev_id
 JOIN project ON project.id = dev_proj.proj_id;
 ```
+
+# Агрегатные функции
+> все агрегатные функции используются с `group by`
+
+
+> **SUM** - считает сумму всех записей в сгруппированном поле
+
+```sql
+SELECT customer.name, SUM(product.price) 
+FROM customer 
+JOIN cart ON customer.id = cart.customer_id                                               
+JOIN product ON product.id = cart product_id                                                
+GROUP BY (customer.id);
+--     name    | sum
+-- ------------+------
+--  customer 2 |  470
+--  customer 3 |  688
+--  customer 1 | 1079
+```
+
+> **AVG** - считает среднее значение всех записей в сгруппированном поле
+
+```sql
+SELECT customer.name, AVG(product.price) 
+FROM customer 
+JOIN cart ON customer.id = cart.customer_id                                               
+JOIN product ON product.id = cart product_id                                                
+GROUP BY (customer.id);
+--     name    | avg
+-- ------------+--------
+--  customer 2 | 470.00
+--  customer 3 | 344.00
+--  customer 1 | 359.67
+```
+
+
+> **ARRAY_AGG** - собирает значения всех записей в сгруппированном поле в массив (список)
+
+
+```sql
+SELECT blogger.name, ARRAY_AGG(post.body) FROM blogger
+JOIN post ON blogger.id = post.blogger_id
+GROUP BY (blogger.id);
+--    name    |                         array_agg
+-- -----------+-----------------------------------------------------------
+--  blogger 1 | {"my first blog","today is a good day","it is my b-day!"}
+--  blogger 2 | {"my first post","some post"}
+--  blogger 3 | {"i am not a blogger"}
+```
+
+> **MIN/MAX** - выбирает минимальное/максимальное значение из всех записей в сгруппированном поле
+
+```sql
+SELECT blogger.name, MAX(post.created_at), MIN(post.created_at)
+FROM blogger
+JOIN post on blogger.id = post.blogger_id
+GROUP BY (blogger.id);
+--    name    |    max     |    min
+-- -----------+------------+------------
+--  blogger 2 | 2022-12-06 | 2013-10-05
+--  blogger 3 | 2022-11-08 | 2022-11-08
+--  blogger 1 | 2021-01-09 | 2020-08-01
+```
+
+> **COUNT** - считает кол-во записей в сгруппированном поле
+
+```sql
+SELECT blogger.name, COUNT(post.id)
+FROM blogger
+JOIN post on blogger.id = post.blogger_id
+GROUP BY (blogger.id);
+--    name    | count
+-- -----------+-------
+--  blogger 2 |     2
+--  blogger 3 |     1
+--  blogger 1 |     3
+```
+
+# Import/Export баз данных
+
+write from file to db
+```bash
+psql db_name < file.sql
+# при этом db_name должна существовать
+```
+
+write from db to file
+```bash
+pg_dump db_name > file.sql
+```
